@@ -13,7 +13,10 @@ async def on_message(message):
     msg = message.content;
     if msg.lower() == 'hi janusz' or msg.lower() == 'hey janusz':
         await client.send_message(message.channel, get_personal_greeting(get_author_name(message.author)))
-
+        reply = await client.wait_for_message(timeout=10, author=message.author, channel=message.channel)
+        if not reply:
+            await client.send_message(message.channel, get_author_name(message.author) + " you could do better than ignoring me :cry:")
+            
 @client.event
 async def on_message_edit(before, after):
     if after.author == client.user:
@@ -60,11 +63,11 @@ def get_personal_greeting(author):
     
     
 def get_author_name(author):
-    if author == discord.Member:
+    if type(author) == discord.Member:
         name = author.nick if author.nick else author.name
         return name
     else:
-        return author.name
+        return author.name.split(" ")[0]
         
 def isHoliday():
     day = datetime.date.today().day

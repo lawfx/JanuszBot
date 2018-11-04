@@ -1,4 +1,5 @@
-[{
+[
+{
 	"category": "breakfast",
 	"author": "lawfx",
 	"working_day": true,
@@ -14,7 +15,9 @@
 				 "I'm hungry...isn't it time for breakfast already?",
 				 "Why eat breakfast alone? It's butter to have it together!",
 				 "Psst...hey you...yeah you, come here... Wanna prepare breakfast?",
-				 "Ahoy, me hearties! Get the rum! Uh... I mean, prepare breakfast..."
+				 "Ahoy, me hearties! Get the rum! Uh... I mean... the bread and butter...",
+				 "Mmm, you smell that? Me neither... *stomach growls* :rolling_eyes:",
+				 ":fork_and_knife: :bread: :cheese: :croissant: :coffee: :tea: :pancakes: :bacon: :milk: :fork_and_knife:"
 	]
 },
 {
@@ -31,7 +34,7 @@
 	"second": 0,
 	"message": [ "Prepare your notes! Stand up time!",
 				 "Ready to let the world know of your progress?",
-				 "Between you and me... isn't it time for something?",
+				 "Between you and me... isn't it time for something?\n*hint: it involves standing up*",
 				 "Time to stand up and take your usual spot. You know what's next."
 	]
 },
