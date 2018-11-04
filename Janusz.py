@@ -10,20 +10,13 @@ data_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Data')
 async def on_message(message):
     if message.author == client.user:
         return
-    msg = message.content;
-    if msg.lower() == 'hi janusz' or msg.lower() == 'hey janusz':
-        await client.send_message(message.channel, get_personal_greeting(get_author_name(message.author)))
-        reply = await client.wait_for_message(timeout=10, author=message.author, channel=message.channel)
-        if not reply:
-            await client.send_message(message.channel, get_author_name(message.author) + " you could do better than ignoring me :cry:")
+    await greet_user(message)
             
 @client.event
 async def on_message_edit(before, after):
     if after.author == client.user:
         return
-    msg = after.content;
-    if msg.lower() == 'hi janusz' or msg.lower() == 'hey janusz':
-        await client.send_message(after.channel, get_personal_greeting(get_author_name(after.author)))
+    await greet_user(after)
 
 @client.event
 async def on_reaction_add(reaction, user):
@@ -55,12 +48,19 @@ async def send_announcement(announcement):
                         await client.send_message(channel, random.choice(announcement['message']))
                         break
     
+async def greet_user(message):
+    msg = message.content;
+    if msg.lower() == 'hi janusz' or msg.lower() == 'hey janusz':
+        await client.send_message(message.channel, get_personal_greeting(get_author_name(message.author)))
+        reply = await client.wait_for_message(timeout=10, author=message.author, channel=message.channel)
+        if not reply:
+            await client.send_message(message.channel, get_author_name(message.author) + " why do you ignore me? :cry:")
+
 def get_personal_greeting(author):
     message = ''
     message += random.choice(greetings) + ' ' + author + '! '
     message += random.choice(convo_starters)
     return message
-    
     
 def get_author_name(author):
     if type(author) == discord.Member:

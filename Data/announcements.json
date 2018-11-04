@@ -67,5 +67,20 @@
 	"second": 0,
 	"message": [ ":tada: Happy New Year! Wait, am I supposed to be writing more?! Sorry, I'm at a loss for words... or my creator was! :tada:"
 	]
+},
+{
+	"category": "test",
+	"author": "lawfx",
+	"working_day": true,
+	"year": "2020",
+	"month": "*",
+	"day": "*",
+	"week": "*",
+	"day_of_week": "*",
+	"hour": "*",
+	"minute": "*",
+	"second": "0,15,30",
+	"message": [ "TEST!!! :tada:"
+	]
 }
 ]
