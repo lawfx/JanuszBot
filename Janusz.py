@@ -6,9 +6,6 @@ client = discord.Client()
 
 data_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Data')
 
-greetings = ['Hey', 'Hello', 'Greetings', 'Good day']
-personal_greetings = ['Nice to see you here!', 'Productive day?', 'How are you?', 'Great weather today!\nUnless it\'s raining, in which case I\'m just a bot, so... Great weather!']
-
 @client.event
 async def on_message(message):
     if message.author == client.user:
@@ -58,7 +55,7 @@ async def send_announcement(announcement):
 def get_personal_greeting(author):
     message = ''
     message += random.choice(greetings) + ' ' + author + '! '
-    message += random.choice(personal_greetings)
+    message += random.choice(convo_starters)
     return message
     
     
@@ -77,6 +74,16 @@ def isHoliday():
         if int(date[0]) == day and int(date[1]) == month:
             return True
     return False
+    
+f = open(os.path.join(data_folder, "greetings.json"), "r")
+json_greetings = f.read()
+greetings = json.loads(json_greetings)
+f.close()
+
+f = open(os.path.join(data_folder, "convo_starters.json"), "r")
+json_convo_starters = f.read()
+convo_starters = json.loads(json_convo_starters)
+f.close()
     
 f = open(os.path.join(data_folder, "announcements.json"), "r")
 json_announcements = f.read()

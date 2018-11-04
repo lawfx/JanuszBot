@@ -34,4 +34,35 @@
 				 "Between you and me... isn't it time for something?",
 				 "Time to stand up and take your usual spot. You know what's next."
 	]
-}]
+},
+{
+	"category": "christmas",
+	"author": "lawfx",
+	"working_day": false,
+	"year": "*",
+	"month": 12,
+	"day": 25,
+	"week": "*",
+	"day_of_week": "*",
+	"hour": 12,
+	"minute": 0,
+	"second": 0,
+	"message": [ ":gift: May your Christmas sparkle and your holiday overflow with gifts and love. Merry Christmas! :gift:"
+	]
+},
+{
+	"category": "new_year",
+	"author": "lawfx",
+	"working_day": false,
+	"year": "*",
+	"month": 1,
+	"day": 1,
+	"week": "*",
+	"day_of_week": "*",
+	"hour": 0,
+	"minute": 10,
+	"second": 0,
+	"message": [ ":tada: Happy New Year! Wait, am I supposed to be writing more?! Sorry, I'm at a loss for words... or my creator was! :tada:"
+	]
+}
+]
