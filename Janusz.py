@@ -18,18 +18,28 @@ async def on_message(message):
         await client.send_message(message.channel, get_personal_greeting(message.author.nick if message.author.nick else message.author.name))
 
 @client.event
+async def on_message_edit(before, after):
+    if after.author == client.user:
+        return
+    msg = after.content;
+    if msg.lower() == 'hi janusz' or msg.lower() == 'hey janusz':
+        await client.send_message(after.channel, get_personal_greeting(after.author.nick if after.author.nick else after.author.name))
+
+@client.event
 async def on_ready():
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)
     print('------')
-    
-async def set_announcement(announcement):
-    for server in client.servers:
-        for channel in server.channels:
-            if channel.name == 'general' and channel.type == discord.ChannelType.text:
-                if not announcement['working_day'] or (announcement['working_day'] and not isHoliday()):
-                    await client.send_message(channel, random.choice(announcement['message']))
+
+async def send_announcement(announcement):
+    if client.is_logged_in:
+        for server in client.servers:
+            for channel in server.channels:
+                if channel.type == discord.ChannelType.text:
+                    if not announcement['working_day'] or (announcement['working_day'] and not isHoliday()):
+                        await client.send_message(channel, random.choice(announcement['message']))
+                        break
     
 def get_personal_greeting(author):
     message = ''
@@ -62,7 +72,7 @@ f.close()
 #print(json.dumps(announcements, sort_keys=False, indent=4))
 
 for announcement in announcements:
-    sched.add_job(set_announcement, 'cron', year=announcement['year'], month=announcement['month'], day=announcement['day'], week=announcement['week'], day_of_week=announcement['day_of_week'], hour=announcement['hour'], minute=announcement['minute'], second=announcement['second'], args=[announcement])
+    sched.add_job(send_announcement, 'cron', year=announcement['year'], month=announcement['month'], day=announcement['day'], week=announcement['week'], day_of_week=announcement['day_of_week'], hour=announcement['hour'], minute=announcement['minute'], second=announcement['second'], args=[announcement])
 sched.start()
 
 client.run(token)
