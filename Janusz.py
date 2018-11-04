@@ -15,7 +15,7 @@ async def on_message(message):
         return
     msg = message.content;
     if msg.lower() == 'hi janusz' or msg.lower() == 'hey janusz':
-        await client.send_message(message.channel, get_personal_greeting(message.author.nick if message.author.nick else message.author.name))
+        await client.send_message(message.channel, get_personal_greeting(get_author_name(message.author)))
 
 @client.event
 async def on_message_edit(before, after):
@@ -23,8 +23,22 @@ async def on_message_edit(before, after):
         return
     msg = after.content;
     if msg.lower() == 'hi janusz' or msg.lower() == 'hey janusz':
-        await client.send_message(after.channel, get_personal_greeting(after.author.nick if after.author.nick else after.author.name))
+        await client.send_message(after.channel, get_personal_greeting(get_author_name(after.author)))
 
+@client.event
+async def on_reaction_add(reaction, user):
+    if user == client.user or reaction.message.author == client.user:
+        return
+    reactions = reaction.message.reactions
+    for react in reactions:
+        if react.me:
+            return
+    if random.randint(0, 1) == 1:
+        if random.randint(0, 1) == 1:
+            await client.add_reaction(reaction.message, random.choice(reactions).emoji)
+        else:
+            await client.add_reaction(reaction.message, '\U0001f984')
+    
 @client.event
 async def on_ready():
     print('Logged in as')
@@ -47,6 +61,14 @@ def get_personal_greeting(author):
     message += random.choice(personal_greetings)
     return message
     
+    
+def get_author_name(author):
+    if author == discord.Member:
+        name = author.nick if author.nick else author.name
+        return name
+    else:
+        return author.name
+        
 def isHoliday():
     day = datetime.date.today().day
     month = datetime.date.today().month
