@@ -32,7 +32,7 @@
 	"hour": 11,
 	"minute": 30,
 	"second": 0,
-	"message": [ "Prepare your notes! Stand up time!",
+	"message": [ "Gather your thoughts! Stand up time!",
 				 "Ready to let the world know of your progress?",
 				 "Between you and me... isn't it time for something?\n*hint: it involves standing up*",
 				 "Time to stand up and take your usual spot. You know what's next."
@@ -72,7 +72,7 @@
 	"category": "test",
 	"author": "lawfx",
 	"working_day": true,
-	"year": "2020",
+	"year": "2050",
 	"month": "*",
 	"day": "*",
 	"week": "*",
