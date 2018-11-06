@@ -49,16 +49,16 @@ async def send_announcement(announcement):
                         break
     
 async def send_greet_user(message):
-    await client.send_message(message.channel, get_personal_greeting(get_author_name(message.author)))
+    await client.send_message(message.channel, get_personal_greeting(get_person_name(message.author)))
     reply = await client.wait_for_message(timeout=15, author=message.author, channel=message.channel)
     if not reply:
-        await client.send_message(message.channel, get_author_name(message.author) + " why do you ignore me? :cry:")
+        await client.send_message(message.channel, get_person_name(message.author) + " why do you ignore me? :cry:")
                 
 async def send_single_name(message):
-    await client.send_message(message.channel, get_author_name(message.author))
+    await client.send_message(message.channel, get_person_name(message.author))
     reply = await client.wait_for_message(timeout=15, author=message.author, channel=message.channel)
     if not reply:
-        await client.send_message(message.channel, get_author_name(message.author) + " was there something you meant to tell me? :thinking:")
+        await client.send_message(message.channel, get_person_name(message.author) + " was there something you meant to tell me? :thinking:")
          
 async def send_single_mention(message):
     await client.send_message(message.channel, message.author.mention)
@@ -69,6 +69,29 @@ async def send_single_mention(message):
 async def send_daily_color(message):
     await client.send_message(message.channel, "The color of the day is " + daily_color + " :rainbow:")
 
+async def send_roll_dice(message):
+    if random.randint(0, 100) == 77:
+        await client.send_message(message.channel, ":scream_cat: Oh no! (void)dice :scream_cat:")
+    else:
+        await client.send_message(message.channel, "A :game_die: was cast by " + get_person_name(message.author) + " and the result was " + str(random.choice([1,2,3,4,5,6])))
+    
+async def send_random_member(message):
+    if message.channel.type == discord.ChannelType.private:
+        if len(message.channel.recipients) == 1:
+            await client.send_message(message.channel, "Wait what...! I thought it was just you and me here! :scream:")
+        else:
+            await client.send_message(message.channel, get_person_name(random.choice(message.channel.recipients)) + ", I choose you!")
+    else:
+        if len(message.channel.server.members) == 1:
+            await client.send_message(message.channel, "Wait what...! I thought it was just you and me here! :scream:")
+        else:
+            members = []
+            for member in message.channel.server.members:
+                if member.bot:
+                    continue
+                members.append(member)
+            await client.send_message(message.channel, get_person_name(random.choice(members)) + ", I choose you!")
+    
 async def process_message(message):
     msg = message.clean_content.lower()
     if 'janusz' in msg:
@@ -78,10 +101,20 @@ async def process_message(message):
             await send_single_mention(message)
         elif is_in_string_as_whole('color', msg):
             await send_daily_color(message)
+        elif (is_in_string_as_whole('roll', msg) or is_in_string_as_whole('cast', msg)) and is_in_string_as_whole('dice', msg):
+            await send_roll_dice(message)
+        elif (is_in_string_as_whole('pick', msg) or is_in_string_as_whole('choose', msg) or is_in_string_as_whole('random', msg)) and is_in_string_as_whole('member', msg):
+            await send_random_member(message)
+        elif is_in_string_as_whole('help', msg):
+            await client.send_message(message.channel, "Feel free to ask me for a tip or a quote anytime :blush:")
+        elif is_in_string_as_whole('tip', msg):
+            await client.send_message(message.channel, random.choice(tips))
+        elif is_in_string_as_whole('quote', msg):
+            await client.send_message(message.channel, random.choice(quotes))
         elif is_greeting_in_message(msg):
             await send_greet_user(message)
         else:
-            await client.send_message(message.channel, "Sorry " + get_author_name(message.author) + " I didn't quite catch that :confused:")
+            await client.send_message(message.channel, "Sorry " + get_person_name(message.author) + ", I didn't quite catch that :confused:\nFeel free to ask me for a tip or a quote anytime :hugging:")
             
 def get_personal_greeting(author):
     message = ''
@@ -89,12 +122,12 @@ def get_personal_greeting(author):
     message += random.choice(convo_starters)
     return message
     
-def get_author_name(author):
-    if type(author) == discord.Member:
-        name = author.nick if author.nick else author.name
+def get_person_name(person):
+    if type(person) == discord.Member:
+        name = person.nick if person.nick else person.name
         return name
     else:
-        return author.name.split(" ")[0]
+        return person.name.split(" ")[0]
         
 def is_holiday():
     day = datetime.date.today().day
@@ -118,30 +151,24 @@ def is_greeting_in_message(message):
             return True
     return False
     
+def load_json_file_from_data(filename):
+    f = open(os.path.join(data_folder, filename + ".json"), "r")
+    json_contents = f.read()
+    data = json.loads(json_contents)
+    f.close()
+    return data
+
 data_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Data')
 colors = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
 daily_color = ''
 set_daily_color()
     
-f = open(os.path.join(data_folder, "greetings.json"), "r")
-json_greetings = f.read()
-greetings = json.loads(json_greetings)
-f.close()
-
-f = open(os.path.join(data_folder, "convo_starters.json"), "r")
-json_convo_starters = f.read()
-convo_starters = json.loads(json_convo_starters)
-f.close()
-    
-f = open(os.path.join(data_folder, "announcements.json"), "r")
-json_announcements = f.read()
-announcements = json.loads(json_announcements)
-f.close()
-
-f = open(os.path.join(data_folder, "holidays.json"), "r")
-json_holidays = f.read()
-holidays = json.loads(json_holidays)
-f.close()
+greetings = load_json_file_from_data("greetings")
+convo_starters = load_json_file_from_data("convo_starters")
+announcements = load_json_file_from_data("announcements")
+holidays = load_json_file_from_data("holidays")
+tips = load_json_file_from_data("tips")
+quotes = load_json_file_from_data("quotes")
 
 f = open(os.path.join(data_folder, "token.txt"), "r")
 token = f.read()

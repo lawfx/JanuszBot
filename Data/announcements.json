@@ -17,7 +17,7 @@
 				 "Psst...hey you...yeah you, come here... Wanna prepare breakfast?",
 				 "Ahoy, me hearties! Get the rum! Uh... I mean... the bread and butter...",
 				 "Mmm, you smell that? Me neither... *stomach growls* :rolling_eyes:",
-				 ":fork_and_knife: :bread: :cheese: :croissant: :coffee: :tea: :pancakes: :bacon: :milk: :fork_and_knife:"
+				 ":fork_and_knife: :bread: :cheese: :croissant: :coffee: :tea: :pancakes: :bacon: :milk:"
 	]
 },
 {
@@ -35,7 +35,11 @@
 	"message": [ "Gather your thoughts! Stand up time!",
 				 "Ready to let the world know of your progress?",
 				 "Between you and me... isn't it time for something?\n*hint: it involves standing up*",
-				 "Time to stand up and take your usual spot. You know what's next."
+				 "Time to stand up and take your usual spot. You know what's next :speaking_head:",
+				 "My hooves are sweaty, knees weak, legs are heavy\nStop adding bugs in Jira already, code's spaghetti\nI'm nervous, but on the surface I look calm and ready\nTime to stand up, and say on what I keep on progressin'",
+				 "When one door opens, an other closes, or is it the other way around? Who cares... stand up time!",
+				 "Sometimes not speaking says more than all the words in the world. But this isn't the case now, because it's stand up time!",
+				 "Nagpaabut ako kanimo\nI guess you didn't understand that, so try to keep your stand up speech easier to follow :ear:"
 	]
 },
 {
@@ -79,8 +83,8 @@
 	"day_of_week": "*",
 	"hour": "*",
 	"minute": "*",
-	"second": "0,15,30",
-	"message": [ "TEST!!! :tada:"
+	"second": "0,30",
+	"message": [ "Nagpaabut ako kanimo"
 	]
 }
 ]
