@@ -82,7 +82,7 @@ async def send_random_member(message):
         else:
             await client.send_message(message.channel, get_person_name(random.choice(message.channel.recipients)) + ", I choose you!")
     else:
-        if len(message.channel.server.members) == 1:
+        if len(message.channel.server.members) == 2:
             await client.send_message(message.channel, "Wait what...! I thought it was just you and me here! :scream:")
         else:
             members = []
@@ -105,16 +105,14 @@ async def process_message(message):
             await send_roll_dice(message)
         elif (is_in_string_as_whole('pick', msg) or is_in_string_as_whole('choose', msg) or is_in_string_as_whole('random', msg)) and is_in_string_as_whole('member', msg):
             await send_random_member(message)
-        elif is_in_string_as_whole('help', msg):
-            await client.send_message(message.channel, "Feel free to ask me for a tip or a quote anytime :blush:")
-        elif is_in_string_as_whole('tip', msg):
+        elif is_in_string_as_whole('tip', msg) or is_in_string_as_whole('help', msg):
             await client.send_message(message.channel, random.choice(tips))
-        elif is_in_string_as_whole('quote', msg):
-            await client.send_message(message.channel, random.choice(quotes))
+        elif is_in_string_as_whole('joke', msg):
+            await client.send_message(message.channel, random.choice(jokes))
         elif is_greeting_in_message(msg):
             await send_greet_user(message)
         else:
-            await client.send_message(message.channel, "Sorry " + get_person_name(message.author) + ", I didn't quite catch that :confused:\nFeel free to ask me for a tip or a quote anytime :hugging:")
+            await client.send_message(message.channel, "Sorry " + get_person_name(message.author) + ", I didn't quite catch that :confused:\nFeel free to ask me for a tip anytime :hugging:")
             
 def get_personal_greeting(author):
     message = ''
@@ -168,7 +166,7 @@ convo_starters = load_json_file_from_data("convo_starters")
 announcements = load_json_file_from_data("announcements")
 holidays = load_json_file_from_data("holidays")
 tips = load_json_file_from_data("tips")
-quotes = load_json_file_from_data("quotes")
+jokes = load_json_file_from_data("jokes")
 
 f = open(os.path.join(data_folder, "token.txt"), "r")
 token = f.read()
