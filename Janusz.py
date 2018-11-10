@@ -1,8 +1,10 @@
-import discord, random, json, os, datetime, re
+import discord, random, json, os, datetime, re, asyncio
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from hangman import Hangman
 
 sched = AsyncIOScheduler()
 client = discord.Client()
+hangman_games = []
 
 @client.event
 async def on_ready():
@@ -14,7 +16,7 @@ async def on_ready():
 @client.event
 async def on_message(message):
     if message.author == client.user:
-        return
+        return    
     await process_message(message)
     
 @client.event
@@ -94,11 +96,22 @@ async def send_random_member(message):
     
 async def process_message(message):
     msg = message.clean_content.lower()
+    
+    if get_hangman_game(message.channel):
+        if len(msg) == 1:
+            if msg.isalpha():
+                await update_hangman_state(message, msg)
+            else:
+                await client.send_message(message.channel, get_person_name(message.author) + " this isn't a letter! :rolling_eyes:")
+            
     if 'janusz' in msg:
         if 'janusz' == msg:
             await send_single_name(message)
         elif '@janusz' == msg:
             await send_single_mention(message)
+        elif is_in_string_as_whole('play', msg) and not get_active_game(message.channel):
+            if is_in_string_as_whole('hangman', msg):
+                await start_hangman(message)
         elif is_in_string_as_whole('color', msg):
             await send_daily_color(message)
         elif (is_in_string_as_whole('roll', msg) or is_in_string_as_whole('cast', msg)) and is_in_string_as_whole('dice', msg):
@@ -112,8 +125,44 @@ async def process_message(message):
         elif is_greeting_in_message(msg):
             await send_greet_user(message)
         else:
-            await client.send_message(message.channel, "Sorry " + get_person_name(message.author) + ", I didn't quite catch that :confused:\nFeel free to ask me for a tip anytime :hugging:")
-            
+            if is_in_string_as_whole('play', msg) and get_active_game(message.channel):
+                await client.send_message(message.channel, "Sorry " + get_person_name(message.author) + ", there is already an active game in this channel. :call_me:")
+            else:
+                await client.send_message(message.channel, "Sorry " + get_person_name(message.author) + ", I didn't quite catch that :confused:\nFeel free to ask me for a tip anytime :hugging:")
+           
+async def start_hangman(message):
+    game = Hangman(random.choice(wordlist), message.channel)
+    hangman_games.append(game)
+    await client.send_message(game.channel, Hangman.rules)
+    await client.send_message(game.channel, game.get_life_drawing() + "\n" + game.get_solved())
+           
+async def update_hangman_state(message, char):
+    game = get_hangman_game(message.channel)
+    result = game.update(char)
+    if result:
+        await client.send_message(message.channel, result[0].replace(game.author_sign(), get_person_name(message.author)))
+        if result[1]:
+            if result[1] == "Lose":
+                dead_msg = await client.send_message(message.channel, Hangman.dead)
+                await asyncio.sleep(0.1)
+                await client.edit_message(dead_msg, Hangman.dead_left)
+                await asyncio.sleep(0.1)
+                await client.edit_message(dead_msg, Hangman.dead)
+                await asyncio.sleep(0.1)
+                await client.edit_message(dead_msg, Hangman.dead_right)
+                await asyncio.sleep(0.1)
+                await client.edit_message(dead_msg, Hangman.dead)
+            hangman_games.remove(game)
+    
+def get_active_game(channel):
+    return get_hangman_game(channel)
+
+def get_hangman_game(channel):
+    for game in hangman_games:
+        if game.get_channel() == channel:
+            return game
+    return False
+           
 def get_personal_greeting(author):
     message = ''
     message += random.choice(greetings) + ' ' + author + '! '
@@ -167,6 +216,7 @@ announcements = load_json_file_from_data("announcements")
 holidays = load_json_file_from_data("holidays")
 tips = load_json_file_from_data("tips")
 jokes = load_json_file_from_data("jokes")
+wordlist = load_json_file_from_data("wordlist")
 
 f = open(os.path.join(data_folder, "token.txt"), "r")
 token = f.read()
