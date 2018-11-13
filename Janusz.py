@@ -97,12 +97,7 @@ async def send_random_member(message):
 async def process_message(message):
     msg = message.clean_content.lower()
     
-    if get_hangman_game(message.channel):
-        if len(msg) == 1:
-            if msg.isalpha():
-                await update_hangman_state(message, msg)
-            else:
-                await client.send_message(message.channel, get_person_name(message.author) + " this isn't a letter! :rolling_eyes:")
+    await process_hangman(message, msg)
             
     if 'janusz' in msg:
         if 'janusz' == msg:
@@ -130,29 +125,58 @@ async def process_message(message):
             else:
                 await client.send_message(message.channel, "Sorry " + get_person_name(message.author) + ", I didn't quite catch that :confused:\nFeel free to ask me for a tip anytime :hugging:")
            
+async def process_hangman(message, msg):
+    if get_hangman_game(message.channel):
+        if len(msg) == 1:
+            if msg.isalpha():
+                await update_hangman_state(message, msg)
+            else:
+                await client.send_message(message.channel, get_person_name(message.author) + " this isn't a letter! :rolling_eyes:")
+        elif msg == "state":
+            await client.send_message(message.channel, get_hangman_game(message.channel).get_state())
+        elif msg == "rules":
+            await client.send_message(message.channel, Hangman.rules)
+        elif len(msg.split()) == 2 and msg.split()[0] == "solve":
+            if msg.split()[1] == "your_word":
+                await client.send_message(message.channel, get_person_name(message.author) + " you should seriously reconsider your life choices... :pray:")
+            else:
+                await try_solve_hangman(message, msg.split()[1])
+        elif msg == "a single character":
+            await client.send_message(message.channel, "@everyone gather up, we have a genius here! :upside_down:")
+           
 async def start_hangman(message):
     game = Hangman(random.choice(wordlist), message.channel)
     hangman_games.append(game)
     await client.send_message(game.channel, Hangman.rules)
     await client.send_message(game.channel, game.get_life_drawing() + "\n" + game.get_solved())
            
+async def check_hangman_end(message, game, end_result):
+    if end_result:
+        if end_result == "Lose":
+            dead_msg = await client.send_message(message.channel, Hangman.dead)
+            await asyncio.sleep(0.1)
+            await client.edit_message(dead_msg, Hangman.dead_left)
+            await asyncio.sleep(0.1)
+            await client.edit_message(dead_msg, Hangman.dead)
+            await asyncio.sleep(0.1)
+            await client.edit_message(dead_msg, Hangman.dead_right)
+            await asyncio.sleep(0.1)
+            await client.edit_message(dead_msg, Hangman.dead)
+        hangman_games.remove(game)
+           
 async def update_hangman_state(message, char):
     game = get_hangman_game(message.channel)
     result = game.update(char)
     if result:
         await client.send_message(message.channel, result[0].replace(game.author_sign(), get_person_name(message.author)))
-        if result[1]:
-            if result[1] == "Lose":
-                dead_msg = await client.send_message(message.channel, Hangman.dead)
-                await asyncio.sleep(0.1)
-                await client.edit_message(dead_msg, Hangman.dead_left)
-                await asyncio.sleep(0.1)
-                await client.edit_message(dead_msg, Hangman.dead)
-                await asyncio.sleep(0.1)
-                await client.edit_message(dead_msg, Hangman.dead_right)
-                await asyncio.sleep(0.1)
-                await client.edit_message(dead_msg, Hangman.dead)
-            hangman_games.remove(game)
+        await check_hangman_end(message, game, result[1])
+            
+async def try_solve_hangman(message, word):
+    game = get_hangman_game(message.channel)
+    result = game.solve(word)
+    if result:
+        await client.send_message(message.channel, result[0].replace(game.author_sign(), get_person_name(message.author)))
+        await check_hangman_end(message, game, result[1])
     
 def get_active_game(channel):
     return get_hangman_game(channel)

@@ -12,7 +12,7 @@ class Hangman:
     dead_right  = '**   **___\n  |      |\n  |      O\n  |    / |\\\n  |      /\\\n/\\'
     life_drawing = {7 : seven_lives, 6 : six_lives, 5 : five_lives, 4 : four_lives, 3 : three_lives, 2 : two_lives, 1 : one_life, 0 : dead}
     
-    rules = "-----\n_**Rules**_\nYou can type a single character to submit a guess.\nYou have 7 lives.\nHave fun!\n-----"
+    rules = "-----\n_***Hangman rules***_\n- You have **7** lives.\n- You can type `a single character` to submit a guess.\n- Type `solve your_word` if you believe you know the word. Fail to do so and you will lose **3** lives.\n- To be reminded of the current state of the game, type `state`.\n- To see these rules again anytime, type `rules`.\nHave fun!\n-----"
     
     def __init__(self, word, channel):
         self.word = word
@@ -40,6 +40,19 @@ class Hangman:
                 return ["Tough luck " + self.author_sign() + "! Try again..." + self.get_default_reply() , False]
             else:
                 return False
+            
+    def solve(self, word):
+        if self.word == word:
+            return ["Congratulations! :v:\nYou solved: " + self.word , "Win"]
+        else:
+            self.lives -= 3
+            if self.lives <= 0:
+                return [":sob: :sob: :sob: :sob: :sob:\nYou failed to guess: " + self.word, "Lose"]
+            else:
+                return ["BZZT!!! Too bad " + self.author_sign() + ", wrong guess..." + self.get_default_reply() , False]
+            
+    def get_state(self):
+        return "*Current state of Hangman*" + self.get_default_reply()
             
     def author_sign(self):
         return '_author_'
