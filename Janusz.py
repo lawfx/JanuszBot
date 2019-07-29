@@ -16,15 +16,15 @@ async def on_ready():
 @client.event
 async def on_message(message):
     if message.author == client.user:
-        return    
+        return
     await process_message(message)
-    
+
 @client.event
 async def on_message_edit(before, after):
     if after.author == client.user:
         return
     await process_message(after)
-    
+
 @client.event
 async def on_reaction_add(reaction, user):
     if user == client.user or reaction.message.author == client.user:
@@ -49,25 +49,25 @@ async def send_announcement(announcement):
                     if not announcement['working_day'] or (announcement['working_day'] and not is_holiday()):
                         await client.send_message(channel, random.choice(announcement['message']))
                         break
-    
+
 async def send_greet_user(message):
     await client.send_message(message.channel, get_personal_greeting(get_person_name(message.author)))
     reply = await client.wait_for_message(timeout=15, author=message.author, channel=message.channel)
     if not reply:
         await client.send_message(message.channel, get_person_name(message.author) + " why do you ignore me? :cry:")
-                
+
 async def send_single_name(message):
     await client.send_message(message.channel, get_person_name(message.author))
     reply = await client.wait_for_message(timeout=15, author=message.author, channel=message.channel)
     if not reply:
         await client.send_message(message.channel, get_person_name(message.author) + " was there something you meant to tell me? :thinking:")
-         
+
 async def send_single_mention(message):
     await client.send_message(message.channel, message.author.mention)
     reply = await client.wait_for_message(timeout=15, author=message.author, channel=message.channel)
     if not reply:
         await client.send_message(message.channel, message.author.mention + " was there something you meant to tell me? :thinking:")
-        
+
 async def send_daily_color(message):
     await client.send_message(message.channel, "The color of the day is " + daily_color + " :rainbow:")
 
@@ -76,7 +76,7 @@ async def send_roll_dice(message):
         await client.send_message(message.channel, ":scream_cat: Oh no! (void)dice :scream_cat:")
     else:
         await client.send_message(message.channel, "A :game_die: was cast by " + get_person_name(message.author) + " and the result was " + str(random.choice([1,2,3,4,5,6])))
-    
+
 async def send_random_member(message):
     if message.channel.type == discord.ChannelType.private:
         if len(message.channel.recipients) == 1:
@@ -93,12 +93,12 @@ async def send_random_member(message):
                     continue
                 members.append(member)
             await client.send_message(message.channel, get_person_name(random.choice(members)) + ", I choose you!")
-    
+
 async def process_message(message):
     msg = message.clean_content.lower()
-    
+
     await process_hangman(message, msg)
-            
+
     if 'janusz' in msg:
         if 'janusz' == msg:
             await send_single_name(message)
@@ -124,7 +124,7 @@ async def process_message(message):
                 await client.send_message(message.channel, "Sorry " + get_person_name(message.author) + ", there is already an active game in this channel. :call_me:")
             else:
                 await client.send_message(message.channel, "Sorry " + get_person_name(message.author) + ", I didn't quite catch that :confused:\nFeel free to ask me for a tip anytime :hugging:")
-           
+
 async def process_hangman(message, msg):
     if get_hangman_game(message.channel):
         if len(msg) == 1:
@@ -143,13 +143,13 @@ async def process_hangman(message, msg):
                 await try_solve_hangman(message, msg.split()[1])
         elif msg == "a single character":
             await client.send_message(message.channel, "@everyone gather up, we have a genius here! :upside_down:")
-           
+
 async def start_hangman(message):
     game = Hangman(random.choice(wordlist), message.channel)
     hangman_games.append(game)
     await client.send_message(game.channel, Hangman.rules)
     await client.send_message(game.channel, game.get_life_drawing() + "\n" + game.get_solved())
-           
+
 async def check_hangman_end(message, game, end_result):
     if end_result:
         if end_result == "Lose":
@@ -163,21 +163,21 @@ async def check_hangman_end(message, game, end_result):
             await asyncio.sleep(0.1)
             await client.edit_message(dead_msg, Hangman.dead)
         hangman_games.remove(game)
-           
+
 async def update_hangman_state(message, char):
     game = get_hangman_game(message.channel)
     result = game.update(char)
     if result:
         await client.send_message(message.channel, result[0].replace(game.author_sign(), get_person_name(message.author)))
         await check_hangman_end(message, game, result[1])
-            
+
 async def try_solve_hangman(message, word):
     game = get_hangman_game(message.channel)
     result = game.solve(word)
     if result:
         await client.send_message(message.channel, result[0].replace(game.author_sign(), get_person_name(message.author)))
         await check_hangman_end(message, game, result[1])
-    
+
 def get_active_game(channel):
     return get_hangman_game(channel)
 
@@ -186,20 +186,20 @@ def get_hangman_game(channel):
         if game.get_channel() == channel:
             return game
     return False
-           
+
 def get_personal_greeting(author):
     message = ''
     message += random.choice(greetings) + ' ' + author + '! '
     message += random.choice(convo_starters)
     return message
-    
+
 def get_person_name(person):
     if type(person) == discord.Member:
         name = person.nick if person.nick else person.name
         return name
     else:
         return person.name.split(" ")[0]
-        
+
 def is_holiday():
     day = datetime.date.today().day
     month = datetime.date.today().month
@@ -208,20 +208,20 @@ def is_holiday():
         if int(date[0]) == day and int(date[1]) == month:
             return True
     return False
-    
+
 def set_daily_color():
     global daily_color
     daily_color = random.choice(colors)
-    
+
 def is_in_string_as_whole(word, message):
     return True if re.search(r'\b' + word + r'\b', message) else False
-    
+
 def is_greeting_in_message(message):
     for greeting in greetings:
         if is_in_string_as_whole(greeting.lower(), message):
             return True
     return False
-    
+
 def load_json_file_from_data(filename):
     f = open(os.path.join(data_folder, filename + ".json"), "r")
     json_contents = f.read()
@@ -233,7 +233,7 @@ data_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Data')
 colors = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
 daily_color = ''
 set_daily_color()
-    
+
 greetings = load_json_file_from_data("greetings")
 convo_starters = load_json_file_from_data("convo_starters")
 announcements = load_json_file_from_data("announcements")
@@ -248,8 +248,8 @@ f.close()
 #print(json.dumps(announcements, sort_keys=False, indent=4))
 
 for announcement in announcements:
-    sched.add_job(send_announcement, 'cron', year=announcement['year'], month=announcement['month'], day=announcement['day'], week=announcement['week'], day_of_week=announcement['day_of_week'], hour=announcement['hour'], minute=announcement['minute'], second=announcement['second'], args=[announcement])
-sched.add_job(set_daily_color, 'cron', hour=0, minute=0, second=0)
+    sched.add_job(send_announcement, 'cron', misfire_grace_time=10, year=announcement['year'], month=announcement['month'], day=announcement['day'], week=announcement['week'], day_of_week=announcement['day_of_week'], hour=announcement['hour'], minute=announcement['minute'], second=announcement['second'], args=[announcement])
+sched.add_job(set_daily_color, 'cron', misfire_grace_time=10, hour=0, minute=0, second=0)
 sched.start()
 
 client.run(token)

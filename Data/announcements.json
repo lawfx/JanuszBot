@@ -48,6 +48,39 @@
 	]
 },
 {
+	"category": "code_review",
+	"author": "lawfx",
+	"working_day": true,
+	"year": "*",
+	"month": "*",
+	"day": "*",
+	"week": "*",
+	"day_of_week": "tue,thu",
+	"hour": 12,
+	"minute": 30,
+	"second": 0,
+	"message": [ "Code revieww!",
+		"It's that time of the week... Code review time!",
+		":musical_note: Let me see you do\nthe sweet ol' code review :musical_note:"
+	]
+},
+{
+	"category": "release_candidate",
+	"author": "lawfx",
+	"working_day": true,
+	"year": "*",
+	"month": "*",
+	"day": "*",
+	"week": "*",
+	"day_of_week": "thu,fri",
+	"hour": 15,
+	"minute": 0,
+	"second": 0,
+	"message": [ "Not much to say. Put a release candidate out.",
+		"Yeah I know... weekend is around the corner, but put a release candidate out first."
+	]
+},
+{
 	"category": "christmas",
 	"author": "lawfx",
 	"working_day": false,
